@@ -24,9 +24,9 @@ employeesFile:=''.
 ].
 (valid) ifTrue:[
         f:= FileStream open: employeesFile mode: #read.
-        b:= f nextLine.
         [f atEnd] whileFalse:
             [
+                b:= f nextLine.
                 tokens:= b subStrings.
                 count:= count + 1.
                 ((tokens at: 1) = 'salaried') ifTrue: [
@@ -51,7 +51,6 @@ employeesFile:=''.
                         ].
                     ]
                 ].
-                b := f nextLine.
             ].
 
     (numArgs=2) ifTrue:[
@@ -72,9 +71,14 @@ employeesFile:=''.
                 val:= emp getEarnings.
                 (min > val) ifTrue:[
                     min:=val.
-                    minworker:=emp.
                 ].
             ].
+            emps do:[:emp |
+                    val:= emp getEarnings.
+                    (val = min) ifTrue:[
+                        emp getInfo.
+                    ].
+                ].
             minworker getInfo.
         ].
         (action='max') ifTrue:[
@@ -84,10 +88,14 @@ employeesFile:=''.
                 val:= emp getEarnings.
                 (max < val) ifTrue:[
                     max:=val.
-                    maxworker:=emp.
                 ].
             ].
-            maxworker getInfo.
+            emps do:[:emp |
+                    val:= emp getEarnings.
+                    (val = max) ifTrue:[
+                        emp getInfo.
+                    ].
+            ].
         ].
         (action='total') ifTrue:[
             val:= 0.0.
@@ -183,14 +191,18 @@ employeesFile:=''.
             (action='min') ifTrue:[
                 min:= (validEmps at: 1) getEarnings.
                 minworker:= validEmps at:1.
-                emps do:[:emp |
+                validEmps do:[:emp |
                     val:= emp getEarnings.
                     (min > val) ifTrue:[
                         min:=val.
-                        minworker:=emp.
                     ].
                 ].
-                minworker getInfo.
+                validEmps do:[:emp |
+                    val:= emp getEarnings.
+                    (val = min) ifTrue:[
+                        emp getInfo.
+                    ].
+                ].
             ].
             (action='max') ifTrue:[
                 max:= (validEmps at: 1) getEarnings.
@@ -199,10 +211,14 @@ employeesFile:=''.
                     val:= emp getEarnings.
                     (max < val) ifTrue:[
                         max:=val.
-                        maxworker:=emp.
                     ].
                 ].
-                maxworker getInfo.
+                validEmps do:[:emp |
+                    val:= emp getEarnings.
+                    (val = max) ifTrue:[
+                        emp getInfo.
+                    ].
+                ].
             ].
             (action='total') ifTrue:[
                 val:= 0.0.
